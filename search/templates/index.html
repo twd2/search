@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link href="{% static 'css/index.css' %}" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}
+{% block body %}
+<div id="main">
+    <div id="header">
+        <span id="blog" class="miniblock"></span>
+        <span id="lab" class="miniblock"></span>
+    </div>
+    <div id="logo">
+        <div id="Wd1"></div>
+        <div id="Wd2"></div>
+        <div id="banner"></div>
+    </div>
+    <form action="{% url 'search' %}" method="GET">
+        <div id="txtbox">
+            <input type="text" name="q" id="txt" class="textbox" style="width:100%;" placeholder="清华大学"/>
+        </div>
+        <div id="btnbox">
+            <input type="button" id="btn1" value="Search" class="button" /> <input type="button" id="btn2" value="Lucky" class="button" />
+        </div>
+    </form>
+    <div id="footer"><p>Powered by <a href="//twd2.me" target="_blank">Wandai</a></p>
+    <p>Special thanks for <a href="http://breeswish.org" target="_blank">Breeswish</a></p>
+    <p><span id="egg">Wandai</span> &copy; 2009-2016</p></div>
+    <div id="dialogContainer"><div class="centerwrap"><div class="inner"><div id="dialogOuter"><div id="dialog" class="show"><div class="content"></div><div class="bar"><input type="button" id="btnOK" value="OK" class="button" /></div></div></div></div></div></div>
+</div>
+<div id="bgbuffer1"></div><div id="bgbuffer2"></div>
+{% endblock %}
