@@ -1,0 +1,12 @@
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+.keyword {
+    color: red;
+}
+
+.search-box {
+    width: 50%;
+}

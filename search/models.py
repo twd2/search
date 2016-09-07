@@ -17,14 +17,6 @@ class Page(models.Model):
     def __str__(self):
         return self.title
 
-    @classmethod
-    def search(cls, words):
-        pages = cls.objects
-        for word in words:
-            ids = Word.objects.filter(word=word).values('page_id')
-            pages = pages.filter(id__in=ids)
-        return pages
-
 
 @python_2_unicode_compatible
 class Word(models.Model):

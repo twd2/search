@@ -1,51 +1,63 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
-<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-<style>
-    .keyword {
-        color: red;
-    }
-</style>
+<link href="{% static 'css/search.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock %}
 {% block body %}
-<div id="main">
-<div id="header">
-    <span id="blog" class="miniblock"><a href="{% url 'index' %}">Search</a></span>
-</div>
-<form action="{% url 'search' %}" method="GET">
-    <input type="text" name="q" value="{{ q }}"> {{ word_count }}
-    <input type="submit" name="operation" value="Search">
-</form>
-{{ count }} results, {{ page_count }} pages.
-Show {{ count_current_page }}.
-{% for result in results %}
-<p>
-<a href="{{ result.url }}" target="_blank">{{ result.title_highlighted|safe }}</a>
-</p>
-<p>{{ result.content_highlighted|safe }}</p>
-{% endfor %}
-<nav aria-label="pagination">
-    <ul class="pagination">
-        {% if p == 1 %}
-        <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-        {% else %}
-        <li><a href="{% url 'search' %}?q={{ q }}&p={{ p|add:-1 }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-        {% endif %}
-        {% for page in pages %}
-        {% if page == p %}
-        <li class="active"><a href="{% url 'search' %}?q={{ q }}&p={{ page }}">{{ page }} <span class="sr-only">(current)</span></a></li>
-        {% else %}
-        <li><a href="{% url 'search' %}?q={{ q }}&p={{ page }}">{{ page }}</a></li>
-        {% endif %}
-        {% endfor %}
-        {% if p >= page_count %}
-        <li class="disabled"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-        {% else %}
-        <li><a href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-        {% endif %}
-    </ul>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'main' %}">Search</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <form class="navbar-form" action="{% url 'search' %}" method="GET">
+        <div class="form-group search-box">
+          <input type="text" name="q" value="{{ q }}" class="form-control" style="width: 100%;">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-success">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </nav>
+<div class="container">
+    <div class="page-header">
+        <h1>Results</h1>
+        <p class="lead">Found {{ count }} results in {{ query_time }} seconds.</p>
+    </div>
+    {% for result in results %}
+    <h3><a href="{{ result.url }}" target="_blank">{{ result.title_highlighted|safe }}</a></h3>
+    <p class="text-success">{{ result.url_short }} <a class="text-info" href="#">举报</a></p>
+    <p><span class="text-info">Updated at {{ result.update_at }} - </span>{{ result.content_highlighted|safe }}</p>
+    <hr>
+    {% endfor %}
+    <nav aria-label="pagination">
+        <ul class="pagination">
+            {% if p == 1 %}
+            <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            {% else %}
+            <li><a href="{% url 'search' %}?q={{ q }}&p={{ p|add:-1 }}{% if sort %}&sort=1{% endif %}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            {% endif %}
+            {% for page in pages %}
+            {% if page == p %}
+            <li class="active"><a href="#">{{ page }} <span class="sr-only">(current)</span></a></li>
+            {% else %}
+            <li><a href="{% url 'search' %}?q={{ q }}&p={{ page }}{% if sort %}&sort=1{% endif %}">{{ page }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if p >= page_count %}
+            <li class="disabled"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% else %}
+            <li><a href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}{% if sort %}&sort=1{% endif %}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}

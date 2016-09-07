@@ -17,5 +17,3 @@ body { overflow:hidden; }
 .custombox-data { overflow-x:hidden;overflow-y:auto;padding:5px;position:absolute;top:0px;width:-webkit-calc(100% - 10px);width:-moz-calc(100% - 10px);width:calc(100% - 10px);height:-webkit-calc(100% - 10px); }
 .custombox-close-button { position:absolute;top:2px;right:2px;background:url(../img/close.png) no-repeat;width:16px;height:16px; }
 .custombox-refresh-button { position:absolute;top:2px;left:2px;background:url(../img/refresh.png) no-repeat;width:16px;height:16px; }
-#aqi { top:20%;left:30px;height:400px;width:250px; }
-#uptime { top:90px;left:-webkit-calc(50% - 350px);left:-moz-calc(50% - 350px);left:calc(50% - 350px);height:80px;width:700px; }

@@ -6,6 +6,9 @@ import jieba
 import json
 import Queue
 import urlparse
+import re
+import pytz
+import datetime
 from HTMLParser import HTMLParser
 from django.utils import timezone
 
@@ -63,42 +66,53 @@ def get_response(url, **kwargs):
     return response
 
 
-def get_initial_urls():
+def get_news():
     links = []
-    for page in Page.objects.order_by('-download_at').all():
-        current_link = page.url
-        parser = SpiderParser()
-        try:
-            response = get_response(current_link)
-            info = response.info()
-            if info.getheader('Content-Type') not in ['text/html']:
-                print 'Ignore(type={0}) {1}'.format(info.getheader('Content-Type'), current_link)
-                continue
-            print 'Load {0}'.format(current_link)
-            parser.feed(response.read())
-            print 'Loaded {0} links'.format(len(links))
-            for link in parser.links:
-                link = urlparse.urljoin(current_link, link)
-                link = link.split('#')[0]
-                if not Page.objects.filter(url=link).exists():
-                    links.append(link)
-        except (urllib2.URLError, urllib2.HTTPError, UnicodeDecodeError) as e:
-            continue
-        if len(links) > 1000:
-            break
+    for y in range(2000, 2020):
+        for m in range(1, 13):
+            url = 'http://news.tsinghua.edu.cn/publish/thunews/newsCollections/d_{0}_{1}.json'.format(y, m)
+            try:
+                j = json.loads(get_response(url).read())['data']
+                for k, v in j.items():
+                    for item in v:
+                        links.append('http://news.tsinghua.edu.cn/' + item['htmlurl'][:-5] + '_.html')
+            except Exception as e:
+                print 'Error({0}) {1}'.format(e, url)
     return list(set(links))
 
 
+def load_news():
+    with open('links.txt', 'r') as f:
+        links = [l.strip() for l in f]
+    return links
+
+
+def get_news_detail(text):
+    title = re.search(r'\<title\>(.+?)\</title\>', text).group(1)
+    parser = SpiderParser()
+    parser.feed(re.search(r'\<article (.+?)\>([\s\S]+?)\</article\>', text).group(2))
+    content = parser.content.strip()
+    update_at_match = re.search(ur'\</i\>(\d{4})年(\d{1,2})月(\d{1,2})日\s+?(\d{1,2}):(\d{1,2}):(\d{1,2})[\s　]+?清华新闻网\</div\>',
+                               text)
+    y, mo, d, h, mi, s = [str(g) for g in update_at_match.groups()]
+    y, mo, d, h, mi, s = map(int, [y, mo, d, h, mi, s])
+    tz = pytz.timezone('Asia/Shanghai')
+    update_at = tz.localize(datetime.datetime(y, mo, d, h, mi, s)).astimezone(pytz.utc)
+    return title, content, update_at
+
+
 if __name__ == '__main__':
+    # res = get_response('http://news.tsinghua.edu.cn/publish/thunews/10303/2016/20160907170315434529002/20160907170315434529002_.html')
+    # title, content, update_at = get_news_detail(res.read().decode('utf-8'))
+    # print(title + ' ' + str(update_at))
+    # exit(0)
     Q = Queue.Queue()
     try:
         domains = ['news.tsinghua.edu.cn', 'www.tsinghua.edu.cn']
         # initial url
         print 'Initializing'
-        for link in get_initial_urls():
+        for link in load_news():
             Q.put(link)
-        # for link in load_news():
-        #     Q.put(link)
         while not Q.empty():
             try:
                 current_link = Q.get()
@@ -117,16 +131,16 @@ if __name__ == '__main__':
                         print 'Ignore(type={0}) {1}'.format(info.getheader('Content-Type'), current_link)
                         continue
                     print 'Fetch {0}'.format(current_link)
-                    parser.feed(response.read())
+                    html = response.read().decode('utf-8')
                     print 'Fetched'
                 except Exception as e:
                     print 'Error({0}) {1}'.format(e, current_link)
                     continue
-                # TODO(twd2): update_at, hash
-                parser.title = parser.title.strip()
-                parser.content = parser.content.strip()
-                page = Page(title=parser.title, content=parser.content,
-                            download_at=timezone.now(), update_at=timezone.now(),
+                # TODO(twd2): hash
+                title, content, update_at = get_news_detail(html)
+                print(title + ' ' + str(update_at))
+                page = Page(title=title, content=content,
+                            download_at=timezone.now(), update_at=update_at,
                             url=current_link, hash='')
                 try:
                     page.save()
