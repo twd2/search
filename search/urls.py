@@ -5,5 +5,6 @@ from . import views
 urlpatterns = [
     url(r'^$', views.main, name='main'),
     url(r'^search$', views.search, name='search'),
-    url(r'^search2$', views.search2, name='search2'),
+    url(r'^page/(?P<pk>\d+)$', views.PageView.as_view(), name='page'),
+    url(r'^page/(?P<pk>\d+)/json$', views.page_json, name='page_json'),
 ]

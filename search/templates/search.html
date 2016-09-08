@@ -2,6 +2,17 @@
 {% load static %}
 {% block head %}
 <link href="{% static 'css/search.css' %}" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="{% static 'js/search.js' %}"></script>
+{% if p < page_count %}
+<link rel="prefetch" href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}{% if sort %}&sort=1{% endif %}">
+<link rel="prerender" href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}{% if sort %}&sort=1{% endif %}">
+{% endif %}
+<script type="text/javascript">
+//<![CDATA[
+var highlight_re_str = {{ highlight_re|safe }};
+var highlight_re = new RegExp(highlight_re_str, "gi");
+//]]>
+</script>
 {% endblock %}
 {% block body %}
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -33,8 +44,8 @@
         <p class="lead">Found {{ count }} results in {{ query_time }} seconds.</p>
     </div>
     {% for result in results %}
-    <h3><a href="{{ result.url }}" target="_blank">{{ result.title_highlighted|safe }}</a></h3>
-    <p class="text-success">{{ result.url_short }} <a class="text-info" href="#">举报</a></p>
+    <h3>{% if result.is_ad %}<span class="label label-primary">AD</span> {% endif %}{% if result.is_official %}<span class="label label-primary">Official</span> {% endif %}<a href="{{ result.url }}" target="_blank">{{ result.title_highlighted|safe }}</a></h3>
+    <p class="text-success">{{ result.url_short }} <a class="text-info snapshot" href="javascript:;" data-id="{{ result.id }}" data-json-url="{% url 'page_json' pk=result.id %}" title="At {{ result.download_at }}">Snapshot</a> <a class="text-info report" href="javascript:;" data-id="{{ result.id }}">Report</a></p>
     <p><span class="text-info">Updated at {{ result.update_at }} - </span>{{ result.content_highlighted|safe }}</p>
     <hr>
     {% endfor %}
