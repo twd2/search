@@ -2,8 +2,6 @@
 import os
 import urllib
 import urllib2
-import jieba
-import json
 import Queue
 import urlparse
 from HTMLParser import HTMLParser
@@ -56,8 +54,9 @@ def get_response(url, **kwargs):
         request = urllib2.Request(url)
     
     request.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) '
-                                     + 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 '
-                                     + 'Safari/537.36 WandaiSpider/0.1')
+                                     + 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                     + 'Chrome/52.0.2743.116 Safari/537.36 '
+                                     + 'WandaiSpider/0.1')
 
     response = urllib2.urlopen(request)
     return response
@@ -71,37 +70,48 @@ def get_initial_urls():
         try:
             response = get_response(current_link)
             info = response.info()
-            if info.getheader('Content-Type') not in ['text/html']:
+            if not any(info.getheader('Content-Type').find(t) >= 0 for t in ['text/html']):
                 print 'Ignore(type={0}) {1}'.format(info.getheader('Content-Type'), current_link)
                 continue
             print 'Load {0}'.format(current_link)
-            parser.feed(response.read())
+            parser.feed(response.read().decode('utf-8'))
             print 'Loaded {0} links'.format(len(links))
             for link in parser.links:
                 link = urlparse.urljoin(current_link, link)
                 link = link.split('#')[0]
                 if not Page.objects.filter(url=link).exists():
                     links.append(link)
-        except (urllib2.URLError, urllib2.HTTPError, UnicodeDecodeError) as e:
+        except Exception as e:
             continue
+        # 1000 is enough?
         if len(links) > 1000:
             break
     return list(set(links))
 
 
+def load_links_from_file(file):
+    try:
+        with open(file, 'r') as f:
+            return [l.strip() for l in f]
+    except Exception as e:
+        print('Error no link in file {0}'.format(file))
+        return []
+
+
 if __name__ == '__main__':
     Q = Queue.Queue()
     try:
-        domains = ['news.tsinghua.edu.cn', 'www.tsinghua.edu.cn']
+        domains = ['twd2.me', 'twd2.net', 'vijos.org', 'news.tsinghua.edu.cn', 'www.tsinghua.edu.cn']
         # initial url
         print 'Initializing'
+        for link in load_links_from_file('left_links.txt'):
+            Q.put(link)
         for link in get_initial_urls():
             Q.put(link)
-        # for link in load_news():
-        #     Q.put(link)
         while not Q.empty():
             try:
                 current_link = Q.get()
+                # TODO(twd2): IPv6
                 current_domain = urlparse.urlparse(current_link).netloc.split(':')[0]
                 if not any(current_domain.endswith(domain) for domain in domains):
                     print 'Ignore(domain={0}) {1}'.format(current_domain, current_link)
@@ -113,11 +123,12 @@ if __name__ == '__main__':
                 try:
                     response = get_response(current_link)
                     info = response.info()
-                    if info.getheader('Content-Type') not in ['text/html']:
-                        print 'Ignore(type={0}) {1}'.format(info.getheader('Content-Type'), current_link)
+                    if not any(info.getheader('Content-Type').find(t) >= 0 for t in ['text/html']):
+                        print 'Ignore(type={0}) {1}'.format(info.getheader('Content-Type'),
+                                                            current_link)
                         continue
                     print 'Fetch {0}'.format(current_link)
-                    parser.feed(response.read())
+                    parser.feed(response.read().decode('utf-8'))
                     print 'Fetched'
                 except Exception as e:
                     print 'Error({0}) {1}'.format(e, current_link)
@@ -141,7 +152,7 @@ if __name__ == '__main__':
             except Exception as e:
                 print 'Error({0})'.format(e)
     except KeyboardInterrupt as e:
-        pass
-        # print list(downloaded)
-        # while not Q.empty():
-        #     print Q.get()
+        with open('left_links.txt', 'w') as f:
+            while not Q.empty():
+                f.write(Q.get().encode('utf-8') + '\n')
+        print('Exiting')
