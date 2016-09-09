@@ -15,8 +15,8 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="{% url 'main' %}">Search</a>
-      <span id="blog" class="navbar-brand"></span>
-      <span id="lab" class="navbar-brand"></span>
+      <a class="navbar-brand" href="//twd2.me">Wandai Blog</a>
+      <a class="navbar-brand" href="http://lab.twd2.net">Wandai Laboratory</a>
     </div>
   </div>
 </nav>
@@ -31,13 +31,13 @@
             <input type="text" name="q" id="txt" class="textbox" style="width:100%;" placeholder="清华大学计算机系"/>
         </div>
         <div id="btnbox">
-            <input type="button" id="btn1" value="Search" class="button" /> <input type="button" id="btn2" value="Lucky" class="button" />
+            <input type="button" id="btn1" value="Search" class="button" /> <input type="button" id="btn2" value="Advanced" class="button" />
         </div>
     </form>
-    <div id="footer"><p>Powered by <a href="//twd2.me" target="_blank">Wandai</a></p>
-    <p>Special thanks for <a href="http://breeswish.org" target="_blank">Breeswish</a></p>
-    <p><span id="egg">Wandai</span> &copy; 2009-2016</p></div>
-    <div id="dialogContainer"><div class="centerwrap"><div class="inner"><div id="dialogOuter"><div id="dialog" class="show"><div class="content"></div><div class="bar"><input type="button" id="btnOK" value="OK" class="button" /></div></div></div></div></div></div>
+    <div id="footer">
+        <p>Powered by <a href="//twd2.me" target="_blank">Wandai</a></p>
+        <p><span id="egg">Wandai</span> &copy; 2009-2016</p>
+    </div>
 </div>
 <div id="bgbuffer1"></div><div id="bgbuffer2"></div>
 {% endblock %}

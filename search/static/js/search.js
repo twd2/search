@@ -10,7 +10,7 @@ $(document).ready(function() {
 
     $('.snapshot').click(function (e) {
         var $a = $(e.target);
-        $.ajax($a.attr('data-json-url')).done(function (obj) {
+        $.ajax('/page/' + $a.attr('data-id') + '/json').done(function (obj) {
             // alert(obj.content);
             BootstrapDialog.show({
                 title: obj.title,

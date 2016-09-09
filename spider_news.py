@@ -30,7 +30,7 @@ class SpiderParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
         self.is_title = tag == 'title'
-        self.is_content = tag not in ['script', 'title']
+        self.is_content = tag not in ['script', 'style', 'title']
         if tag in ['a']:
             for attr, value in attrs:
                 if not value:
@@ -66,23 +66,8 @@ def get_response(url, **kwargs):
     return response
 
 
-def get_news():
-    links = []
-    for y in range(2000, 2020):
-        for m in range(1, 13):
-            url = 'http://news.tsinghua.edu.cn/publish/thunews/newsCollections/d_{0}_{1}.json'.format(y, m)
-            try:
-                j = json.loads(get_response(url).read())['data']
-                for k, v in j.items():
-                    for item in v:
-                        links.append('http://news.tsinghua.edu.cn/' + item['htmlurl'][:-5] + '_.html')
-            except Exception as e:
-                print 'Error({0}) {1}'.format(e, url)
-    return list(set(links))
-
-
 def load_news():
-    with open('links.txt', 'r') as f:
+    with open('new_links.txt', 'r') as f:
         links = [l.strip() for l in f]
     return links
 
@@ -102,10 +87,6 @@ def get_news_detail(text):
 
 
 if __name__ == '__main__':
-    # res = get_response('http://news.tsinghua.edu.cn/publish/thunews/10303/2016/20160907170315434529002/20160907170315434529002_.html')
-    # title, content, update_at = get_news_detail(res.read().decode('utf-8'))
-    # print(title + ' ' + str(update_at))
-    # exit(0)
     Q = Queue.Queue()
     try:
         domains = ['news.tsinghua.edu.cn', 'www.tsinghua.edu.cn']

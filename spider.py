@@ -27,7 +27,7 @@ class SpiderParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
         self.is_title = tag == 'title'
-        self.is_content = tag not in ['script', 'title']
+        self.is_content = tag not in ['script', 'style', 'title']
         if tag in ['a']:
             for attr, value in attrs:
                 if not value:

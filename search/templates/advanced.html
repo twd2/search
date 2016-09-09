@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+{% endblock %}
+{% block body %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'main' %}">Search</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+    </div>
+  </div>
+</nav>
+<div class="container">
+    <div class="page-header">
+        <h1>Advanced Search</h1>
+        <p class="lead">Meets all your needs.</p>
+    </div>
+    <form action="{% url 'search' %}" method="GET">
+        <div class="input-group" style="width: 100%;">
+          <span class="input-group-addon" id="query-addon">Query</span>
+          <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="..." aria-describedby="query-addon">
+        </div>
+        <br>
+        <div class="input-group" style="width: 100%;">
+          <span class="input-group-addon" id="year-addon">年份</span>
+          <input type="text" name="year" value="{% if year %}{{ year }}{% endif %}" class="form-control" placeholder="2016" aria-describedby="year-addon">
+        </div>
+        <br>
+        <div class="input-group" style="width: 100%;">
+          <span class="input-group-addon" id="month-addon">最近一月内</span>
+          <input type="checkbox" name="month" value="1" class="form-control" aria-describedby="month-addon"{% if month %} checked{% endif %}>
+        </div>
+        <br>
+        <div class="input-group" style="width: 100%;">
+          <span class="input-group-addon" id="week-addon">最近一周内</span>
+          <input type="checkbox" name="week" value="1" class="form-control" aria-describedby="week-addon"{% if week %} checked{% endif %}>
+        </div>
+        <br>
+        <div class="input-group">
+            <button type="submit" class="btn btn-success">Search</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

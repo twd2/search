@@ -1,0 +1,2 @@
+#!/bin/bash
+diff links.txt links2.txt | grep -v Error | grep \> | awk '{print $2}'

@@ -4,8 +4,8 @@
 <link href="{% static 'css/search.css' %}" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="{% static 'js/search.js' %}"></script>
 {% if p < page_count %}
-<link rel="prefetch" href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}{% if sort %}&sort=1{% endif %}">
-<link rel="prerender" href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}{% if sort %}&sort=1{% endif %}">
+<link rel="prefetch" href="{% url 'search' %}?{{ query_string }}&p={{ p|add:1 }}">
+<link rel="prerender" href="{% url 'search' %}?{{ query_string }}&p={{ p|add:1 }}">
 {% endif %}
 <script type="text/javascript">
 //<![CDATA[
@@ -32,7 +32,8 @@ var highlight_re = new RegExp(highlight_re_str, "gi");
           <input type="text" name="q" value="{{ q }}" class="form-control" style="width: 100%;">
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-success">Search</button>
+            <button type="submit" class="btn btn-success">Search</button>
+            <a class="btn btn-info" href="{% url 'advanced' %}?{{ query_string }}" role="button">Advanced</a>
         </div>
       </form>
     </div>
@@ -41,11 +42,11 @@ var highlight_re = new RegExp(highlight_re_str, "gi");
 <div class="container">
     <div class="page-header">
         <h1>Results</h1>
-        <p class="lead">Found {{ count }} results in {{ query_time }} seconds.</p>
+        <p class="lead">Found {{ count }} results in {{ query_time }} seconds{% if cache_hit %} (cached){% endif %}.</p>
     </div>
     {% for result in results %}
-    <h3>{% if result.is_ad %}<span class="label label-primary">AD</span> {% endif %}{% if result.is_official %}<span class="label label-primary">Official</span> {% endif %}<a href="{{ result.url }}" target="_blank">{{ result.title_highlighted|safe }}</a></h3>
-    <p class="text-success">{{ result.url_short }} <a class="text-info snapshot" href="javascript:;" data-id="{{ result.id }}" data-json-url="{% url 'page_json' pk=result.id %}" title="At {{ result.download_at }}">Snapshot</a> <a class="text-info report" href="javascript:;" data-id="{{ result.id }}">Report</a></p>
+    <h3>{% if result.is_ad %}<span class="label label-primary">AD</span> {% endif %}{% if result.is_official %}<span class="label label-primary">Official</span> {% endif %}<a href="{% url 'page_go' pk=result.pk %}" target="_blank">{{ result.title_highlighted|safe }}</a></h3>
+    <p class="text-success"><span title="{{ result.url }}">{{ result.url_short }}</span> <a class="text-info snapshot" href="javascript:;" data-id="{{ result.id }}" title="At {{ result.download_at }}">Snapshot</a> <a class="text-info report" href="javascript:;" data-id="{{ result.id }}">Report</a></p>
     <p><span class="text-info">Updated at {{ result.update_at }} - </span>{{ result.content_highlighted|safe }}</p>
     <hr>
     {% endfor %}
@@ -54,19 +55,19 @@ var highlight_re = new RegExp(highlight_re_str, "gi");
             {% if p == 1 %}
             <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
             {% else %}
-            <li><a href="{% url 'search' %}?q={{ q }}&p={{ p|add:-1 }}{% if sort %}&sort=1{% endif %}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            <li><a href="{% url 'search' %}?{{ query_string }}&p={{ p|add:-1 }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
             {% endif %}
             {% for page in pages %}
             {% if page == p %}
             <li class="active"><a href="#">{{ page }} <span class="sr-only">(current)</span></a></li>
             {% else %}
-            <li><a href="{% url 'search' %}?q={{ q }}&p={{ page }}{% if sort %}&sort=1{% endif %}">{{ page }}</a></li>
+            <li><a href="{% url 'search' %}?{{ query_string }}&p={{ page }}">{{ page }}</a></li>
             {% endif %}
             {% endfor %}
             {% if p >= page_count %}
             <li class="disabled"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
             {% else %}
-            <li><a href="{% url 'search' %}?q={{ q }}&p={{ p|add:1 }}{% if sort %}&sort=1{% endif %}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            <li><a href="{% url 'search' %}?{{ query_string }}&p={{ p|add:1 }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
             {% endif %}
         </ul>
     </nav>

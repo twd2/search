@@ -7,8 +7,8 @@ body,input,select,textarea,button { font-family:"Lucida Grande", "Lucida", "Luci
 
 img { border:0; }
 
-a,a:visited,a:link,a:active { color:#1D76C7;text-decoration:none; }
-a:hover { color:#3A93E2;text-decoration:underline; }
+/*a,a:visited,a:link,a:active { color:#1D76C7;text-decoration:none; }
+a:hover { color:#3A93E2;text-decoration:underline; }*/
 
 .textbox { margin:0;box-sizing:content-box;height:22px;line-height:22px;outline:0;padding:4px;border:1px solid #DDD;border-radius:5px;transition:border .1s linear,box-shadow .2s linear; }
 .textbox:hover { border-color:#B0B0B0; }
@@ -49,3 +49,8 @@ textarea.textbox { width:200px;height:120px; }
 .miniblock a { color:#AAA;text-decoration:none; }
 .loading { background:url(../img/loading.svg) no-repeat;width:16px;height:16px; }
 .statusbox { overflow-y:auto;height:300px;width:600px; }
+
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}

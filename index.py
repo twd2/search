@@ -9,7 +9,8 @@ from search.models import *
 
 
 if __name__ == '__main__':
-    for page in Page.objects.all():
+    # for page in Page.objects.annotate(word_count=models.Count('word')).filter(word_count=0):
+    for page in Page.objects.order_by('-id'):
         if page.word_set.exists():
             continue
         print 'Page {0}'.format(page.id)
