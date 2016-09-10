@@ -63,7 +63,7 @@ if __name__ == '__main__':
                                                             current_link)
                         continue
                     print 'Fetch {0}'.format(current_link)
-                    html = response.read().decode('utf-8')
+                    html = spider.decode_chinese(response.read())
                     print 'Fetched'
                 except Exception as e:
                     print 'Error({0}) {1}'.format(e, current_link)

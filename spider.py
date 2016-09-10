@@ -74,7 +74,7 @@ def get_initial_urls():
                 print 'Ignore(type={0}) {1}'.format(info.getheader('Content-Type'), current_link)
                 continue
             print 'Load {0}'.format(current_link)
-            parser.feed(response.read().decode('utf-8'))
+            parser.feed(decode_chinese(response.read()))
             print 'Loaded {0} links'.format(len(links))
             for link in parser.links:
                 link = urlparse.urljoin(current_link, link)
@@ -87,6 +87,13 @@ def get_initial_urls():
         if len(links) > 1000:
             break
     return list(set(links))
+
+
+def decode_chinese(s):
+    try:
+        return s.decode('utf-8')
+    except:
+        return s.decode('gb18030', 'ignore')
 
 
 def load_links_from_file(file):
@@ -104,7 +111,7 @@ if __name__ == '__main__':
         domains = ['twd2.me', 'twd2.net', 'vijos.org', 'news.tsinghua.edu.cn', 'www.tsinghua.edu.cn']
         # initial url
         print 'Initializing'
-        for link in load_links_from_file('left_links.txt'):
+        for link in load_links_from_file('links/left_links.txt'):
             Q.put(link)
         for link in get_initial_urls():
             Q.put(link)
@@ -128,7 +135,7 @@ if __name__ == '__main__':
                                                             current_link)
                         continue
                     print 'Fetch {0}'.format(current_link)
-                    parser.feed(response.read().decode('utf-8'))
+                    parser.feed(decode_chinese(response.read()))
                     print 'Fetched'
                 except Exception as e:
                     print 'Error({0}) {1}'.format(e, current_link)
@@ -152,7 +159,7 @@ if __name__ == '__main__':
             except Exception as e:
                 print 'Error({0})'.format(e)
     except KeyboardInterrupt as e:
-        with open('left_links.txt', 'w') as f:
+        with open('links/left_links.txt', 'w') as f:
             while not Q.empty():
-                f.write(Q.get().encode('utf-8') + '\n')
+                f.write(Q.get() + u'\n')
         print('Exiting')

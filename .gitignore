@@ -93,3 +93,4 @@ ENV/
 .DS_Store
 *.pyc
 *.txz
+links/
