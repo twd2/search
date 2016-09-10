@@ -40,6 +40,7 @@ var highlight_re = new RegExp(highlight_re_str, "gi");
   </div>
 </nav>
 <div class="container">
+    {% if results %}
     <div class="page-header">
         <h1>Results</h1>
         <p class="lead">Found {{ count }} results in {{ query_time }} seconds{% if cache_hit %} (cached){% endif %}.</p>
@@ -71,5 +72,17 @@ var highlight_re = new RegExp(highlight_re_str, "gi");
             {% endif %}
         </ul>
     </nav>
+    {% else %}
+    <div class="page-header">
+        <h1>Sorry</h1>
+        <p class="lead">Your search did not match any documents.</p>
+    </div>
+    <p class="text-info">Suggestions:</p>
+    <ul>
+        <li>Make sure all words are spelled correctly.</li>
+        <li>Try different keywords.</li>
+        <li>Try more general keywords.</li>
+    </ul>
+    {% endif %}
 </div>
 {% endblock %}

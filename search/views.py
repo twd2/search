@@ -41,6 +41,7 @@ _result_cache = {}
 
 
 def search(request):
+    time_start = time.time()
     p = int(request.GET.get('p', 1))
     q = unicode(request.GET.get('q', ''))
     sort = bool(int(request.GET.get('sort', 1)))
@@ -59,6 +60,7 @@ def search(request):
         year = 0
     month = bool(int(request.GET.get('month', 0)))
     week = bool(int(request.GET.get('week', 0)))
+    print('preprocess time {0}s'.format(time.time() - time_start))
 
     count_cache_key = (' '.join(words), year, month, week)
     print(count_cache_key)
@@ -207,3 +209,11 @@ def advanced(request):
     week = bool(int(request.GET.get('week', '0')))
     return render(request, 'advanced.html', {'title': 'Advanced Search', 'q': q,
                                              'year': year, 'month': month, 'week': week})
+
+
+def page_tags(request, pk):
+    import jieba.analyse
+    page = Page.objects.get(pk=pk)
+    tags = jieba.analyse.extract_tags(page.content)
+    return render(request, 'tags.html', {'title': 'Tags',
+                                         'page': page, 'tags': tags})
